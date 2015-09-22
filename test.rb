@@ -2,9 +2,6 @@ require "pry"
 require "./lib/stone"
 require "./lib/map"
 
-# field = Array.new(32).map{[]}
-# field = Array.new(32)
-# field_line_count = 0
 stone_manager = nil
 readed_storn_count = 0
 deploying = 0
@@ -12,15 +9,11 @@ deploying = 0
 field = Field.new
 
 # 読み込み
-f = open("./kihon.txt")
+f = open(ARGV[0])
 f.each { |line|
   line.chomp!
   if field.setupFinished?
     field.setup(line)
-    # if field_line_count <= 32
-    # field[field_line_count] = line
-    # line.chars { |ch| field[field_line_count].push(ch) }
-    # field_line_count += 1
   elsif 0 < line.length && stone_manager.nil?
     stone_manager = StoneManager.new(line.to_i)
   elsif 0 < line.length
@@ -71,5 +64,6 @@ stone_manager.stone_collection.each do |stone|
     puts "失敗！"
   end
 end
-# deploy(field, stone_manager.getStone(deploying))
-stone_manager.exportAnswer()
+
+stone_manager.exportAnswer(ARGV[0].gsub(/.txt$/, '_answer.txt'))
+

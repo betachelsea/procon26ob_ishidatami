@@ -24,8 +24,8 @@ class StoneManager
     @stone_collection.count
   end
 
-  def exportAnswer
-    File.open("answer.txt", "w:ascii-8bit") do |file|
+  def exportAnswer(filename)
+    File.open(filename, "w:ascii-8bit") do |file|
       @stone_collection.each do |stone|
         file.print stone.deployed? ? "#{stone.x} #{stone.y} H 0\r\n" : "\r\n"
       end
