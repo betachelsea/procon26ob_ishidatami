@@ -24,6 +24,7 @@ class Field
     stone.x = x
     stone.y = y
     stone.map.each_with_index do |stone_line, index|
+      next if @map[y + index].nil?
       map_line = @map[y + index][x, 8]
       merged_line = (map_line.split("").map.with_index do |map_stone, i|
         (stone_line[i] == "1") ? "2" : map_stone
@@ -45,15 +46,18 @@ class Field
         next if touched_other_stone
         next if stone.id.to_i == 0 # 最初の石は以下の処理を無視
         # 辺が既存の石に触れているかを調査
-        if (@map[y + index - 1][x + i] == "2" || # 上
-            @map[y + index][x + i - 1] == "2" || # 左
-            @map[y + index + 1][x + i] == "2" || # 下
-            @map[y + index][x + i + 1] == "2")   # 右
-          touched_other_stone = true
-        end
+        touched_other_stone = true if hasNeighborStone?((x + i), (y + index))
       end
     end
     return (stone.id.to_i == 0 || touched_other_stone)
+  end
+
+  def hasNeighborStone?(x, y)
+    return true if 0 <= y - 1 && @map[y - 1][x] == "2"
+    return true if y + 1 <= 31 && @map[y + 1][x] == "2"
+    return true if 0 <= x - 1 && @map[y][x - 1] == "2"
+    return true if x + 1 <= 31 && @map[y][x + 1] == "2"
+    return false
   end
 
 end
