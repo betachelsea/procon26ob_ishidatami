@@ -22,22 +22,6 @@ f.each { |line|
 }
 f.close
 
-# 置ける座標におく
-
-def canSetPosition?(x, y, field, stone, deployedMap)
-  # puts stone.map
-  stone.map.each_with_index do |stone_line, index|
-    # puts field[y + index] # 1行
-    next if stone_line.count("1") == 0
-    search = field.map[y + index][x, 8]
-    stone_line.each_char.with_index do |zk, i|
-      return false if zk == "1" && search[i] == "1"
-    end
-  end
-  return true
-end
-
-
 def deploy(field, stone, deployedMap)
   # さがす
   (0..31).each do |x|
@@ -55,7 +39,6 @@ def deploy(field, stone, deployedMap)
 end
 
 deployedMap = DeployedMap.new
-
 
 # 解決
 stone_manager.stone_collection.each do |stone|
