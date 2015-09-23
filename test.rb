@@ -51,6 +51,7 @@ def deploy(field, stone, deployedMap)
       end
     end
   end
+  return false
 end
 
 deployedMap = DeployedMap.new

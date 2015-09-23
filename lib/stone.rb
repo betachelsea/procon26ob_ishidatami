@@ -41,12 +41,17 @@ class Stone
     @map = Array.new()
   end
 
-  attr_accessor :x, :y
+  attr_reader :x, :y
   attr_reader :id
   attr_reader :map
 
   def setState(line)
-    @map << line if !line.empty?
+    @map << line.split("").map{|n| n.to_i} if !line.empty?
+  end
+
+  def setPosition(x, y)
+    @x = x
+    @y = y
   end
 
   def setup_finished?
