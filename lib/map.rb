@@ -66,22 +66,3 @@ class Field
 
 end
 
-class DeployedMap
-  def initialize()
-    @map = Array.new(32) { Array.new(32, "0").join }
-  end
-
-  attr_reader :map
-
-  def setStone(stone)
-    stone.map.each_with_index do |line, index|
-      map_line = @map[stone.y + index][stone.x, 8]
-      merged_line = (map_line.split("").map.with_index do |n, i|
-        return false if n == "1" && line[i] == "1"
-        (line[i] == "1") ? "1" : n
-      end).join
-      @map[stone.y + index][stone.x, 8] = merged_line
-    end
-  end
-end
-

@@ -22,7 +22,7 @@ f.each { |line|
 }
 f.close
 
-def deploy(field, stone, deployedMap)
+def deploy(field, stone)
   # さがす
   (-7..31).each do |x|
     (-7..31).each do |y|
@@ -38,11 +38,9 @@ def deploy(field, stone, deployedMap)
   return false
 end
 
-deployedMap = DeployedMap.new
-
 # 解決
 stone_manager.stone_collection.each do |stone|
-  if deploy(field, stone, deployedMap)
+  if deploy(field, stone)
     puts "置けた"
   else
     puts "失敗！"
