@@ -1,12 +1,14 @@
 require "pry"
 require "./lib/stone"
 require "./lib/map"
+require "./lib/searcher"
 
 stone_manager = nil
 readed_storn_count = 0
 deploying = 0
 
 field = Field.new
+searcher = Searcher.new
 
 # 読み込み
 f = open(ARGV[0])
@@ -22,25 +24,9 @@ f.each { |line|
 }
 f.close
 
-def deploy(field, stone)
-  # さがす
-  (-7..31).each do |x|
-    (-7..31).each do |y|
-      if field.settable?(x, y, stone)
-        field.setStone(x, y, stone)
-        puts "置けます #{x}, #{y}, stone id: #{stone.id}"
-        return true
-      else
-        # puts "置けません！ #{x}, #{y}, stone id: #{stone.id}"
-      end
-    end
-  end
-  return false
-end
-
 # 解決
 stone_manager.stone_collection.each do |stone|
-  if deploy(field, stone)
+  if searcher.deploy(field, stone)
     puts "置けた"
   else
     puts "失敗！"
