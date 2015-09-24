@@ -24,8 +24,8 @@ f.close
 
 def deploy(field, stone, deployedMap)
   # さがす
-  (0..31).each do |x|
-    (0..31).each do |y|
+  (-7..31).each do |x|
+    (-7..31).each do |y|
       if field.settable?(x, y, stone)
         field.setStone(x, y, stone)
         puts "置けます #{x}, #{y}, stone id: #{stone.id}"

@@ -1,18 +1,23 @@
 # coding:utf-8
+require "pry"
 
 class Field
   # 0: 空欄、 1: 置けない場所、 2: 置かれ済みの石
   def initialize
-    @map = Array.new(32) { Array.new(32) { 0 } }
+    @map = Array.new(32 + 7*2) { Array.new(32 + 7*2) { 1 } }
     @field_line_count = 0
     @first_stone_deployed = false
   end
 
-  attr_reader :setup_finished, :map
+  attr_reader :setup_finished
 
   def setup(line)
-    @map[@field_line_count] = line.split("").map{|n| n.to_i}
+    @map[@field_line_count + 7][7, line.length] = line.split("").map{|n| n.to_i}
     @field_line_count += 1
+  end
+
+  def getMap
+    @map[7, 32].map{|line| line[7, 32]}
   end
 
   def setupFinished?
@@ -23,12 +28,12 @@ class Field
   def setStone(x, y, stone)
     stone.setPosition(x, y)
     stone.map.each_with_index do |stone_line, index|
-      next if @map[y + index].nil?
-      map_line = @map[y + index][x, 8]
+      next if @map[7 + y + index].nil?
+      map_line = @map[7 + y + index][7 + x, 8]
       merged_line = map_line.map.with_index do |map_stone, i|
         (stone_line[i] == 1) ? 2 : map_stone
       end
-      @map[y + index][x, 8] = merged_line
+      @map[7 + y + index][7 + x, 8] = merged_line
     end
   end
 
@@ -37,8 +42,8 @@ class Field
     touched_other_stone = false
     stone.map.each_with_index do |stone_line, index|
       next if stone_line.count(1) == 0 # 石が無ければ飛ばす
-      return false if @map[y + index].nil? # 石があるのにmap外なら配置不可
-      map_line = @map[y + index][x, 8]
+      return false if @map[7 + y + index].nil? # 石があるのにmap外なら配置不可
+      map_line = @map[7 + y + index][7 + x, 8]
       stone_line.each.with_index do |zk, i|
         next if zk == 0
         return false if map_line[i] != 0 # map上にすでに何かあるなら配置不可
@@ -52,10 +57,10 @@ class Field
   end
 
   def hasNeighborStone?(x, y)
-    return true if 0 <= y - 1 && @map[y - 1][x] == 2
-    return true if y + 1 <= 31 && @map[y + 1][x] == 2
-    return true if 0 <= x - 1 && @map[y][x - 1] == 2
-    return true if x + 1 <= 31 && @map[y][x + 1] == 2
+    return true if 0 <= (7 + y - 1) && @map[7 + y - 1][7 + x] == 2
+    return true if (7 + y + 1) <= 46 && @map[7 + y + 1][7 + x] == 2
+    return true if 0 <= (7 + x - 1) && @map[7 + y][7 + x - 1] == 2
+    return true if (7 + x + 1) <= 46 && @map[7 + y][7 + x + 1] == 2
     return false
   end
 

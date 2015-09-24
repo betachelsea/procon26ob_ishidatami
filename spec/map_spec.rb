@@ -1,5 +1,6 @@
 require "spec_helper"
 require "map"
+require "pry"
 
 describe Field do
   before do
@@ -9,7 +10,8 @@ describe Field do
     before do
       @field.setup("00000111111111111111111111111111")
     end
-    it { expect(@field.map[0]).to match_array([0,0,0,0,0, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1]) }
+    it { expect(@field.getMap[0]).to match_array(
+          [0,0,0,0,0, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1]) }
   end
 
   describe "#setStone" do
@@ -20,7 +22,7 @@ describe Field do
     it "success set stone" do
       allow(@stone).to receive(:map).and_return([[0,1,0,0,0,0,0,0]])
       @field.setStone(0, 0, @stone)
-      expect(@field.map[0][1]).to eq(2)
+      expect(@field.getMap[0][1]).to eq(2)
     end
   end
 
@@ -38,6 +40,12 @@ describe Field do
       it "can set on map" do
         allow(@stone).to receive(:map).and_return([[0,0,0,1,0,0,0,0]])
         expect(@field.settable?(0, 0, @stone)).to be_truthy
+      end
+      it "can set minus position" do
+        allow(@stone).to receive(:map).and_return(
+          [[0,0,0,0,0,0,0,0],
+           [0,0,0,0,0,0,0,1]])
+        expect(@field.settable?(-7, -1, @stone)).to be_truthy
       end
       it "cannot set on map" do
         allow(@stone).to receive(:map).and_return([[0,0,0,0,0,1,0,0]])
