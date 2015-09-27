@@ -26,6 +26,7 @@ class Field
 
   # 問答無用で配置
   def setStone(x, y, stone)
+    @first_stone_deployed = true
     stone.setPosition(x, y)
     stone.map.each_with_index do |stone_line, index|
       next if @map[7 + y + index].nil?
@@ -38,30 +39,44 @@ class Field
   end
 
   # 配置可能かチェック
-  def settable?(x, y, stone)
-    touched_other_stone = false
+  # -1:配置不可, 0〜:配置可、数値は接石数(壁含む)を示す。
+  # 0 は実質最初の配置石のみで返される。
+  def getScore(x, y, stone)
+    neighbor_stone_count = 0
+    neighbor_wall_count = 0
     stone.map.each_with_index do |stone_line, index|
       next if stone_line.count(1) == 0 # 石が無ければ飛ばす
-      return false if @map[7 + y + index].nil? # 石があるのにmap外なら配置不可
+      return -1 if @map[7 + y + index].nil? # 石があるのにmap外なら配置不可
       map_line = @map[7 + y + index][7 + x, 8]
       stone_line.each.with_index do |zk, i|
         next if zk == 0
-        return false if map_line[i] != 0 # map上にすでに何かあるなら配置不可
-        next if touched_other_stone
-        next if stone.id.to_i == 0 # 最初の石は以下の処理を無視
+        return -1 if map_line[i] != 0 # map上にすでに何かあるなら配置不可
         # 辺が既存の石に触れているかを調査
-        touched_other_stone = true if hasNeighborStone?((x + i), (y + index))
+        neighbor_stone_count += countNeighborStone((x + i), (y + index))
+        neighbor_wall_count += countNeighborWall((x + i), (y + index))
       end
     end
-    return (stone.id.to_i == 0 || touched_other_stone)
+
+    return -1 if @first_stone_deployed && neighbor_stone_count == 0
+    return neighbor_stone_count + neighbor_wall_count
   end
 
-  def hasNeighborStone?(x, y)
-    return true if 0 <= (7 + y - 1) && @map[7 + y - 1][7 + x] == 2
-    return true if (7 + y + 1) <= 46 && @map[7 + y + 1][7 + x] == 2
-    return true if 0 <= (7 + x - 1) && @map[7 + y][7 + x - 1] == 2
-    return true if (7 + x + 1) <= 46 && @map[7 + y][7 + x + 1] == 2
-    return false
+  def countNeighborStone(x, y)
+    count = 0
+    count += 1 if 0 <= (7 + y - 1) && @map[7 + y - 1][7 + x] == 2
+    count += 1 if (7 + y + 1) <= 46 && @map[7 + y + 1][7 + x] == 2
+    count += 1 if 0 <= (7 + x - 1) && @map[7 + y][7 + x - 1] == 2
+    count += 1 if (7 + x + 1) <= 46 && @map[7 + y][7 + x + 1] == 2
+    count
+  end
+
+  def countNeighborWall(x, y)
+    count = 0
+    count += 1 if 0 <= (7 + y - 1) && @map[7 + y - 1][7 + x] == 1
+    count += 1 if (7 + y + 1) <= 46 && @map[7 + y + 1][7 + x] == 1
+    count += 1 if 0 <= (7 + x - 1) && @map[7 + y][7 + x - 1] == 1
+    count += 1 if (7 + x + 1) <= 46 && @map[7 + y][7 + x + 1] == 1
+    count
   end
 
 end
