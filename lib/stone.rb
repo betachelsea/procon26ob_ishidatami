@@ -27,7 +27,7 @@ class StoneManager
   def exportAnswer(filename)
     File.open(filename, "w:ascii-8bit") do |file|
       @stone_collection.each do |stone|
-        file.print stone.deployed? ? "#{stone.x} #{stone.y} H 0\r\n" : "\r\n"
+        file.print stone.deployed? ? "#{stone.x} #{stone.y} #{stone.side} #{stone.rotate}\r\n" : "\r\n"
       end
     end
   end
@@ -44,7 +44,7 @@ class Stone
     @status = {}
   end
 
-  attr_reader :x, :y
+  attr_reader :x, :y, :side, :rotate
   attr_reader :id
 
   def getMap(side=@side, rotate=@rotate)
@@ -68,9 +68,11 @@ class Stone
     self.generateStoneStatus if self.setup_finished?
   end
 
-  def setPosition(x, y)
+  def setStatus(x, y, side, rotate)
     @x = x
     @y = y
+    @side = side
+    @rotate = rotate
   end
 
   def setup_finished?

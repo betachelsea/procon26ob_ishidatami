@@ -25,9 +25,9 @@ class Field
   end
 
   # 問答無用で配置
-  def setStone(x, y, stone)
+  def setStone(x, y, side, rotate, stone)
     @first_stone_deployed = true
-    stone.setPosition(x, y)
+    stone.setStatus(x, y, side, rotate)
     stone.getMap.each_with_index do |stone_line, index|
       next if @map[7 + y + index].nil?
       map_line = @map[7 + y + index][7 + x, 8]
@@ -41,10 +41,10 @@ class Field
   # 配置可能かチェック
   # -1:配置不可, 0〜:配置可、数値は接石数(壁含む)を示す。
   # 0 は実質最初の配置石のみで返される。
-  def getScore(x, y, stone)
+  def getScore(x, y, side, rotate, stone)
     neighbor_stone_count = 0
     neighbor_wall_count = 0
-    stone.getMap.each_with_index do |stone_line, index|
+    stone.getMap(side, rotate).each_with_index do |stone_line, index|
       next if stone_line.count(1) == 0 # 石が無ければ飛ばす
       return -1 if @map[7 + y + index].nil? # 石があるのにmap外なら配置不可
       map_line = @map[7 + y + index][7 + x, 8]

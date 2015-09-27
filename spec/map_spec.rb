@@ -58,7 +58,7 @@ describe Field do
       @stone.setState("00000000")
     end
     it "success set stone" do
-      @field.setStone(0, 0, @stone)
+      @field.setStone(0, 0, 'H', 0, @stone)
       expect(@field.getMap[1][0]).to eq(2) # @field.getMap[y][x]
     end
   end
@@ -87,17 +87,17 @@ describe Field do
     end
 
     context "when set first stone" do
-      it { expect(@field.getScore(-7, 0, @stone1)).to eq(-1) }  # 領域外なので不可
-      it { expect(@field.getScore(-2, 1, @stone1)).to eq(0) }   # 隣接ゼロだが配置可
-      it { expect(@field.getScore(-3, 1, @stone1)).to eq(8) }   # 隣接数：8
+      it { expect(@field.getScore(-7, 0, 'H', 0, @stone1)).to eq(-1) }  # 領域外なので不可
+      it { expect(@field.getScore(-2, 1, 'H', 0, @stone1)).to eq(0) }   # 隣接ゼロだが配置可
+      it { expect(@field.getScore(-3, 1, 'H', 0, @stone1)).to eq(8) }   # 隣接数：8
     end
 
     context "when set second stone" do
       before do
-        @field.setStone(-2, 1, @stone1)
+        @field.setStone(-2, 1, 'H', 0, @stone1)
       end
-      it { expect(@field.getScore(-3, 25, @stone2)).to eq(-1) } # 隣接していないので配置不可
-      it { expect(@field.getScore(-1, 1, @stone2)).to eq(4) }   # 隣接数：4
+      it { expect(@field.getScore(-3, 25, 'H', 0, @stone2)).to eq(-1) } # 隣接していないので配置不可
+      it { expect(@field.getScore(-1, 1, 'H', 0, @stone2)).to eq(4) }   # 隣接数：4
     end
   end
 end
