@@ -38,15 +38,18 @@ class Stone
     @id = id
     @x = nil
     @y = nil
-    @map = Array.new()
+    @init_map = Array.new()
   end
 
   attr_reader :x, :y
   attr_reader :id
-  attr_reader :map
+
+  def getMap
+    @init_map
+  end
 
   def setState(line)
-    @map << line.split("").map{|n| n.to_i} if !line.empty?
+    @init_map << line.split("").map{|n| n.to_i} if !line.empty?
   end
 
   def setPosition(x, y)
@@ -55,7 +58,7 @@ class Stone
   end
 
   def setup_finished?
-    8 <= @map.length
+    8 <= @init_map.length
   end
 
   def deployed?

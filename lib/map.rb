@@ -28,7 +28,7 @@ class Field
   def setStone(x, y, stone)
     @first_stone_deployed = true
     stone.setPosition(x, y)
-    stone.map.each_with_index do |stone_line, index|
+    stone.getMap.each_with_index do |stone_line, index|
       next if @map[7 + y + index].nil?
       map_line = @map[7 + y + index][7 + x, 8]
       merged_line = map_line.map.with_index do |map_stone, i|
@@ -44,7 +44,7 @@ class Field
   def getScore(x, y, stone)
     neighbor_stone_count = 0
     neighbor_wall_count = 0
-    stone.map.each_with_index do |stone_line, index|
+    stone.getMap.each_with_index do |stone_line, index|
       next if stone_line.count(1) == 0 # 石が無ければ飛ばす
       return -1 if @map[7 + y + index].nil? # 石があるのにmap外なら配置不可
       map_line = @map[7 + y + index][7 + x, 8]
