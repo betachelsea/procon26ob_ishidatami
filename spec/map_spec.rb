@@ -1,5 +1,6 @@
 require "spec_helper"
 require "map"
+require "stone"
 require "pry"
 
 describe Field do
@@ -46,45 +47,43 @@ describe Field do
 
   describe "#setStone" do
     before do
-      @stone = double("stone")
-      allow(@stone).to receive(:setPosition)
+      @stone = Stone.new(0)
+      @stone.setState("00000000")
+      @stone.setState("10000000")
+      @stone.setState("00000000")
+      @stone.setState("00000000")
+      @stone.setState("00000000")
+      @stone.setState("00000000")
+      @stone.setState("00000000")
+      @stone.setState("00000000")
     end
     it "success set stone" do
-      allow(@stone).to receive(:map).and_return([[0,1,0,0,0,0,0,0]])
       @field.setStone(0, 0, @stone)
-      expect(@field.getMap[0][1]).to eq(2)
+      expect(@field.getMap[1][0]).to eq(2) # @field.getMap[y][x]
     end
   end
 
   describe "#getScore" do
     before do
-      @stone1 = double("stone")
-      allow(@stone1).to receive(:setPosition)
-      allow(@stone1).to receive(:id).and_return(3)
-      allow(@stone1).to receive(:map).and_return([
-        [0,0,0,1,0,0,0,0],
-        [0,0,0,1,0,0,0,0],
-        [0,0,0,1,0,0,0,0],
-        [0,0,0,1,0,0,0,0],
-        [0,0,0,1,0,0,0,0],
-        [0,0,0,1,0,0,0,0],
-        [0,0,0,1,0,0,0,0],
-        [0,0,0,1,0,0,0,0]
-      ])
+      @stone1 = Stone.new(0)
+      @stone1.setState("00010000")
+      @stone1.setState("00010000")
+      @stone1.setState("00010000")
+      @stone1.setState("00010000")
+      @stone1.setState("00010000")
+      @stone1.setState("00010000")
+      @stone1.setState("00010000")
+      @stone1.setState("00010000")
 
-      @stone2 = double("stone")
-      allow(@stone2).to receive(:setPosition)
-      allow(@stone2).to receive(:id).and_return(4)
-      allow(@stone2).to receive(:map).and_return([
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,1,1,0,0,0],
-        [0,0,0,1,1,0,0,0],
-        [0,0,0,1,1,1,0,0],
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0]
-      ])
+      @stone2 = Stone.new(1)
+      @stone2.setState("00000000")
+      @stone2.setState("00011000")
+      @stone2.setState("00011000")
+      @stone2.setState("00011100")
+      @stone2.setState("00000000")
+      @stone2.setState("00000000")
+      @stone2.setState("00000000")
+      @stone2.setState("00000000")
     end
 
     context "when set first stone" do

@@ -38,18 +38,34 @@ class Stone
     @id = id
     @x = nil
     @y = nil
+    @side = 'H' # 'H' or 'T'
+    @rotate = 0 # 0, 90, 180, 270 のいずれか
     @init_map = Array.new()
+    @status = {}
   end
 
   attr_reader :x, :y
   attr_reader :id
 
-  def getMap
-    @init_map
+  def getMap(side=@side, rotate=@rotate)
+    @status["#{side}#{rotate}"]
+  end
+
+  def generateStoneStatus
+    # 8種類作って保持
+    @status["H0"]   = @init_map
+    @status["H90"]  = @init_map.transpose.map(&:reverse)
+    @status["H180"] = @status["H90"].transpose.map(&:reverse)
+    @status["H270"] = @status["H180"].transpose.map(&:reverse)
+    @status["T0"]   = @init_map.map(&:reverse)
+    @status["T90"]  = @status["T0"].transpose.map(&:reverse)
+    @status["T180"] = @status["T90"].transpose.map(&:reverse)
+    @status["T270"] = @status["T180"].transpose.map(&:reverse)
   end
 
   def setState(line)
     @init_map << line.split("").map{|n| n.to_i} if !line.empty?
+    self.generateStoneStatus if self.setup_finished?
   end
 
   def setPosition(x, y)
