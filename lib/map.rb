@@ -1,10 +1,16 @@
 # coding:utf-8
 require "pry"
 
+module CellStatus
+  EMPTY = 0
+  WALL = 1
+  STONE = 2
+  PRESTONE = 3
+end
+
 class Field
-  # 0: 空欄、 1: 置けない場所、 2: 置かれ済みの石
   def initialize
-    @map = Array.new(32 + 7*2) { Array.new(32 + 7*2) { 1 } }
+    @map = Array.new(32 + 7*2) { Array.new(32 + 7*2) { CellStatus::WALL } }
     @field_line_count = 0
     @first_stone_deployed = false
   end
@@ -32,7 +38,7 @@ class Field
       next if @map[7 + y + index].nil?
       map_line = @map[7 + y + index][7 + x, 8]
       merged_line = map_line.map.with_index do |map_stone, i|
-        (stone_line[i] == 1) ? 2 : map_stone
+        (stone_line[i] == 1) ? CellStatus::STONE : map_stone
       end
       @map[7 + y + index][7 + x, 8] = merged_line
     end
