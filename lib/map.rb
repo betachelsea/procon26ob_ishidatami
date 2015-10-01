@@ -44,9 +44,14 @@ class Field
     end
   end
 
+  # 孤立セルの調査
+  def searchAloneCell
+  end
+
   # 配置可能かチェック
   # -1:配置不可, 0〜:配置可、数値は接石数(壁含む)を示す。
   # 0 は実質最初の配置石のみで返される。
+  # また、配置の結果、孤立するセルが発生した場合は-1扱いとする。
   def getScore(x, y, side, rotate, stone)
     neighbor_stone_count = 0
     neighbor_wall_count = 0
