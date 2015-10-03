@@ -1,13 +1,6 @@
 # coding:utf-8
 require "pry"
 
-module CellStatus
-  EMPTY = 0
-  WALL = 1
-  STONE = 2
-  PRESTONE = 3
-end
-
 class Field
   def initialize
     @map = Array.new(32 + 7*2) { Array.new(32 + 7*2) { CellStatus::WALL } }
@@ -30,22 +23,35 @@ class Field
     @field_line_count + 1 <= 32
   end
 
-  # 問答無用で配置
-  def setStone(x, y, side, rotate, stone)
+  def setCellStatus(x, y, side, rotate, stone, cell_status)
     @first_stone_deployed = true
-    stone.setStatus(x, y, side, rotate)
-    stone.getMap.each_with_index do |stone_line, index|
+    stone.getMap(side, rotate).each_with_index do |stone_line, index|
       next if @map[7 + y + index].nil?
       map_line = @map[7 + y + index][7 + x, 8]
       merged_line = map_line.map.with_index do |map_stone, i|
-        (stone_line[i] == 1) ? CellStatus::STONE : map_stone
+        (stone_line[i] == 1) ? cell_status : map_stone
       end
       @map[7 + y + index][7 + x, 8] = merged_line
     end
   end
 
+  # マップ内のprestoneを変換します
+  def prestoneConvert(status)
+    @map.map! do |line|
+      line.map! { |item| (item == CellStatus::PRESTONE) ? status : item }
+    end
+  end
+
   # 孤立セルの調査
-  def searchAloneCell
+  def hasAloneCell?
+    (0..32).each do |x|
+      (0..32).each do |y|
+        next if @map[7 + y][7 + x] != CellStatus::EMPTY
+        return true if countNeighborStatus(x, y, CellStatus::EMPTY) == 0
+        # 調査する
+      end
+    end
+    return false
   end
 
   # 配置可能かチェック
@@ -69,7 +75,23 @@ class Field
     end
 
     return -1 if @first_stone_deployed && neighbor_stone_count == 0
-    return neighbor_stone_count + neighbor_wall_count
+    # 実質配置可
+    answer = neighbor_stone_count + neighbor_wall_count
+    # 孤立セルのチェック
+    setCellStatus(x, y, side, rotate, stone, CellStatus::PRESTONE)
+    answer = -1 if self.hasAloneCell?
+    setCellStatus(x, y, side, rotate, stone, CellStatus::EMPTY)
+    # binding.pry if 30 == stone.id
+    return answer
+  end
+
+  def countNeighborStatus(x, y, target)
+    count = 0
+    count += 1 if 0 <= (7 + y - 1) && @map[7 + y - 1][7 + x] == target
+    count += 1 if (7 + y + 1) <= 46 && @map[7 + y + 1][7 + x] == target
+    count += 1 if 0 <= (7 + x - 1) && @map[7 + y][7 + x - 1] == target
+    count += 1 if (7 + x + 1) <= 46 && @map[7 + y][7 + x + 1] == target
+    count
   end
 
   def countNeighborStone(x, y)

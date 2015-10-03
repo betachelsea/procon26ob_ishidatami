@@ -1,4 +1,5 @@
 # coding:utf-8
+require "./lib/util"
 
 class Searcher
   def deploy(field, stone)
@@ -28,8 +29,9 @@ class Searcher
 
     return false if deploy_score == -1
     # デプロイ
-    field.setStone(deploy_x, deploy_y, deploy_side, deploy_rotate, stone)
-    puts "Score: #{deploy_score}"
+    field.setCellStatus(deploy_x, deploy_y, deploy_side, deploy_rotate, stone, CellStatus::STONE)
+    stone.setStatus(deploy_x, deploy_y, deploy_side, deploy_rotate)
+    puts "Score: #{deploy_score}, stone.id=#{stone.id}"
     return true
   end
 end

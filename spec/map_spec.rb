@@ -1,4 +1,5 @@
 require "spec_helper"
+require "util"
 require "map"
 require "stone"
 require "pry"
@@ -45,7 +46,7 @@ describe Field do
           [0,0,0,0,0, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1]) }
   end
 
-  describe "#setStone" do
+  describe "#setCellStatus" do
     before do
       @stone = Stone.new(0)
       @stone.setState("00000000")
@@ -56,11 +57,23 @@ describe Field do
       @stone.setState("00000000")
       @stone.setState("00000000")
       @stone.setState("00000000")
+      @field.setCellStatus(0, 0, 'H', 0, @stone, CellStatus::STONE)
+      @stone.setStatus(0, 0, 'H', 0)
+
+      @stone2 = Stone.new(1)
+      @stone2.setState("00000000")
+      @stone2.setState("01100000")
+      @stone2.setState("00000000")
+      @stone2.setState("00000000")
+      @stone2.setState("00000000")
+      @stone2.setState("00000000")
+      @stone2.setState("00000000")
+      @stone2.setState("00000000")
+      @field.setCellStatus(0, 0, 'H', 0, @stone2, CellStatus::PRESTONE)
+      @stone2.setStatus(0, 0, 'H', 0)
     end
-    it "success set stone" do
-      @field.setStone(0, 0, 'H', 0, @stone)
-      expect(@field.getMap[1][0]).to eq(2) # @field.getMap[y][x]
-    end
+    it { expect(@field.getMap[1][0]).to eq(CellStatus::STONE) } # @field.getMap[y][x]
+    it { expect(@field.getMap[1][1]).to eq(CellStatus::PRESTONE) }
   end
 
   describe "#getScore" do
@@ -78,8 +91,8 @@ describe Field do
       @stone2 = Stone.new(1)
       @stone2.setState("00000000")
       @stone2.setState("00011000")
+      @stone2.setState("00001000")
       @stone2.setState("00011000")
-      @stone2.setState("00011100")
       @stone2.setState("00000000")
       @stone2.setState("00000000")
       @stone2.setState("00000000")
@@ -94,10 +107,54 @@ describe Field do
 
     context "when set second stone" do
       before do
-        @field.setStone(-2, 1, 'H', 0, @stone1)
+        @field.setCellStatus(-2, 1, 'H', 0, @stone1, CellStatus::STONE)
+        @stone1.setStatus(-2, 1, 'H', 0)
+        map = @field.getMap
       end
       it { expect(@field.getScore(-3, 25, 'H', 0, @stone2)).to eq(-1) } # 隣接していないので配置不可
-      it { expect(@field.getScore(-1, 1, 'H', 0, @stone2)).to eq(4) }   # 隣接数：4
+      it { expect(@field.getScore(-1, 1, 'T', 0, @stone2)).to eq(3) }   # 隣接数：3
+      it { expect(@field.getScore(-1, 1, 'H', 0, @stone2)).to eq(-1) }   # 設置の結果、孤立セルが発生するので配置不可
+
+      it "no change map" do
+        map = Marshal.load(Marshal.dump(@field.getMap))
+        @field.getScore(-1, 1, 'H', 0, @stone2)
+        expect(map).to eq(@field.getMap)
+      end
     end
+
+  end
+
+  describe "#hasAloneCell?" do
+    before do
+      @stone1 = Stone.new(0)
+      @stone1.setState("00010000")
+      @stone1.setState("00010000")
+      @stone1.setState("00010000")
+      @stone1.setState("00010000")
+      @stone1.setState("00010000")
+      @stone1.setState("00010000")
+      @stone1.setState("00010000")
+      @stone1.setState("00010000")
+
+      @stone2 = Stone.new(1)
+      @stone2.setState("00000000")
+      @stone2.setState("00011000")
+      @stone2.setState("00001000")
+      @stone2.setState("00011000")
+      @stone2.setState("00000000")
+      @stone2.setState("00000000")
+      @stone2.setState("00000000")
+      @stone2.setState("00000000")
+    end
+
+    context "when have alone cell" do
+      before do
+        @field.setCellStatus(-2, 1, 'H', 0, @stone1, CellStatus::STONE)
+        @field.setCellStatus(-1, 1, 'H', 0, @stone2, CellStatus::PRESTONE)
+      end
+
+      it { expect(@field.hasAloneCell?).to be_truthy }
+    end
+
   end
 end
