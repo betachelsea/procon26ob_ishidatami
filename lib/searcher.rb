@@ -1,7 +1,24 @@
 # coding:utf-8
 require "./lib/util"
+require "./lib/map"
 
 class Searcher
+  def initialize(field)
+    @field = field
+  end
+
+  def deployStones(stones)
+    field = @field.clone
+    stones.each do |stone|
+      if deploy(field, stone)
+        puts "置けた"
+      else
+        puts "失敗！"
+      end
+    end
+    stones # 定義後
+  end
+
   def deploy(field, stone)
     deploy_score = -1
     deploy_x = nil

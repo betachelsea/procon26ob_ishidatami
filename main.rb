@@ -8,7 +8,6 @@ readed_storn_count = 0
 deploying = 0
 
 field = Field.new
-searcher = Searcher.new
 
 # 読み込み
 f = open(ARGV[0])
@@ -24,15 +23,11 @@ f.each { |line|
 }
 f.close
 
+searcher = Searcher.new(field)
+
 # 解決
 stones = stone_manager.stone_collection
-stones.each do |stone|
-  if searcher.deploy(field, stone)
-    puts "置けた"
-  else
-    puts "失敗！"
-  end
-end
+stones = searcher.deployStones(stones)
 
 stone_manager.exportAnswer(stones, ARGV[0].gsub(/.txt$/, '_answer.txt'))
 
