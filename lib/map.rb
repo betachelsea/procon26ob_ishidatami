@@ -124,7 +124,8 @@ class Field
     answer = neighbor_stone_count + neighbor_wall_count
     # 孤立セルのチェック
     setCellStatus(x, y, side, rotate, stone, CellStatus::PRESTONE)
-    answer = -1 if self.hasAloneCell?
+    # answer = -1 if 1 < self.countEmptyField # 検討中
+    # answer = -1 if self.hasAloneCell? # 検討中
     setCellStatus(x, y, side, rotate, stone, CellStatus::EMPTY)
     # binding.pry if 30 == stone.id
     return answer
