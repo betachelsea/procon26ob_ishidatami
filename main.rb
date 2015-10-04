@@ -17,7 +17,7 @@ f.each { |line|
   if field.setupFinished?
     field.setup(line)
   elsif 0 < line.length && stone_manager.nil?
-    stone_manager = StoneManager.new(line.to_i)
+    stone_manager = StoneReader.new(line.to_i)
   elsif 0 < line.length
     stone_manager.setStoneState(line)
   end
@@ -25,7 +25,8 @@ f.each { |line|
 f.close
 
 # 解決
-stone_manager.stone_collection.each do |stone|
+stones = stone_manager.stone_collection
+stones.each do |stone|
   if searcher.deploy(field, stone)
     puts "置けた"
   else
@@ -33,5 +34,5 @@ stone_manager.stone_collection.each do |stone|
   end
 end
 
-stone_manager.exportAnswer(ARGV[0].gsub(/.txt$/, '_answer.txt'))
+stone_manager.exportAnswer(stones, ARGV[0].gsub(/.txt$/, '_answer.txt'))
 

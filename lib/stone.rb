@@ -1,6 +1,6 @@
 # coding:utf-8
 
-class StoneManager
+class StoneReader
   def initialize(n)
     @stone_collection = Array.new(n) { |n| Stone.new(n) }
     @initialized_count = 0
@@ -16,15 +16,7 @@ class StoneManager
     end
   end
 
-  def getStone(id)
-    @stone_collection[id]
-  end
-
-  def stoneCount
-    @stone_collection.count
-  end
-
-  def exportAnswer(filename)
+  def exportAnswer(stones, filename)
     File.open(filename, "w:ascii-8bit") do |file|
       @stone_collection.each do |stone|
         file.print stone.deployed? ? "#{stone.x} #{stone.y} #{stone.side} #{stone.rotate}\r\n" : "\r\n"
