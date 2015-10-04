@@ -39,6 +39,40 @@ describe Field do
     @field.setup("00000111111111111111111111111111") # 30
     @field.setup("00000111111111111111111111111111")
     @field.setup("00000111111111111111111111111111")
+
+    @field2 = Field.new
+    @field2.setup("11111111111111111111111111111111")
+    @field2.setup("11101111111111111111111111111111")
+    @field2.setup("11100111111111111111111111111111")
+    @field2.setup("11110111111111111111111111111111")
+    @field2.setup("11111111111111111111111111111111") # 5
+    @field2.setup("11111111111111111111111111111111")
+    @field2.setup("11111111111111111111111111111111")
+    @field2.setup("11111111111111111111111111111111")
+    @field2.setup("11111111111111111111111111111111")
+    @field2.setup("11111110000111111111111111111111") # 10
+    @field2.setup("11111110000111111111111111111111")
+    @field2.setup("11111110000111111111111111111111")
+    @field2.setup("11111111111111111111111111111111")
+    @field2.setup("11111111111111111111111111111111")
+    @field2.setup("11111111111111111011111111111111") # 15
+    @field2.setup("11111111111111111000011111111111")
+    @field2.setup("11111111111111111111001111111111")
+    @field2.setup("11111111111111111100011111111111")
+    @field2.setup("11111111111111111111111111111111")
+    @field2.setup("11111111111111111111111111111111") # 20
+    @field2.setup("11111111111111111111111111111111")
+    @field2.setup("11111111111111111111111111111111")
+    @field2.setup("11111111111111111111111111111111")
+    @field2.setup("11111111111111111111111111111111")
+    @field2.setup("11111111111111111111111111111111") # 25
+    @field2.setup("11111111111111111111111111111111")
+    @field2.setup("11111111111111111111111111111111")
+    @field2.setup("11111111111111111111111111111111")
+    @field2.setup("11111111111111111111111111111111")
+    @field2.setup("11111111111111111111111111111111") # 30
+    @field2.setup("11111111111111111111111111111111")
+    @field2.setup("11111111111111111111111111111111")
   end
 
   describe "#setup" do
@@ -155,6 +189,23 @@ describe Field do
 
       it { expect(@field.hasAloneCell?).to be_truthy }
     end
-
   end
+
+  describe "#countEmptyField" do
+    it { expect(@field.countEmptyField).to eq(1) }
+    it { expect(@field2.countEmptyField).to eq(3) }
+  end
+
+  describe "#findIsland" do
+    it { expect(@field2.findIsland(-7, -7, [])).to eq([]) }
+    it { expect(@field2.findIsland(3, 1, []).count).to eq(4) }
+    it { expect(@field2.findIsland(7, 10, []).count).to eq(12) }
+  end
+
+  describe "#getCellId" do
+    it { expect(@field.getCellId(-7, -7)).to eq(0) }
+    it { expect(@field.getCellId(0, 0)).to eq(329) }
+  end
+
 end
+

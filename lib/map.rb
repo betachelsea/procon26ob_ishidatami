@@ -10,6 +10,51 @@ class Field
 
   attr_reader :setup_finished
 
+
+  # フィールド内で空の領域を探索する
+  # mapのidは x + y * (32 + 7*2)
+  # 現在、空のひとつなぎの領域が何個あるかチェックして返す
+  def countEmptyField
+    @emptyFieldIds = [] # 1つが望ましい
+    @count = 0
+
+    # 1セルずつ見る
+    # 白にぶちあたったら @emptyFieldsとして登録して次へ
+    (0..32).each do |y|
+      (0..32).each do |x|
+        next if @map[y + 7][x + 7] != CellStatus::EMPTY
+        next if @emptyFieldIds.any? { |id| id == getCellId(x, y) }
+        island = findIsland(x, y, [])
+        next if island.count == 0
+        @emptyFieldIds.concat(island)
+        @count += 1
+      end
+    end
+
+    @count
+  end
+
+  def findIsland(x, y, foundIds)
+    cell_id = getCellId(x, y)
+    map_x = x + 7
+    map_y = y + 7
+    return foundIds if foundIds.any? { |id| id == cell_id}
+    return foundIds if @map[map_y][map_x] != CellStatus::EMPTY
+    foundIds.push(cell_id)
+
+    # 上下左右
+    foundIds = findIsland(x, y - 1, foundIds)
+    foundIds = findIsland(x, y + 1, foundIds)
+    foundIds = findIsland(x - 1, y, foundIds)
+    foundIds = findIsland(x + 1, y, foundIds)
+
+    return foundIds
+  end
+
+  def getCellId(x, y) # 0 < x,y < 32
+    ((y + 7) * (32 + 7*2)) + (x + 7)
+  end
+
   def setup(line)
     @map[@field_line_count + 7][7, line.length] = line.split("").map{|n| n.to_i}
     @field_line_count += 1
