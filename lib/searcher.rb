@@ -31,8 +31,8 @@ class Searcher
     # さがす
     ['H', 'T'].each do |side|
       [0, 90, 180, 270].each do |rotate|
-        (-7..31).each do |x|
-          (-7..31).each do |y|
+        (-7..38).each do |x|
+          (-7..38).each do |y|
             new_score = field.getScore(x, y, side, rotate, stone)
             if deploy_score < new_score
               deploy_x = x
