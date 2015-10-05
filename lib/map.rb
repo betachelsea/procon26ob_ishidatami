@@ -9,6 +9,7 @@ class Field
   end
 
   attr_reader :setup_finished
+  attr_reader :first_stone_deployed
 
 
   # フィールド内で空の領域を探索する
@@ -69,7 +70,7 @@ class Field
   end
 
   def setCellStatus(x, y, side, rotate, stone, cell_status)
-    @first_stone_deployed = true
+    @first_stone_deployed = true if cell_status == CellStatus::STONE
     stone.getMap(side, rotate).each_with_index do |stone_line, index|
       next if @map[7 + y + index].nil?
       map_line = @map[7 + y + index][7 + x, 8]
