@@ -3,11 +3,17 @@ require "./lib/util"
 require "./lib/map"
 
 class Searcher
-  def initialize(field, stones)
+  def initialize(field, stones, filename)
     @init_field = field
     @init_stones = stones
+    @filename = filename
     @first_stone_candidates = firstStoneCandidateCheck(field, stones[0])
     # TODO: stones[0]が全て空振りだったときのことを検討する
+  end
+
+  def work
+    answer_stones = deployStones
+    exportAnswer(answer_stones)
   end
 
   def deployStones
@@ -73,6 +79,14 @@ class Searcher
     stone.setStatus(deploy_x, deploy_y, deploy_side, deploy_rotate)
     puts "Score: #{deploy_score}, stone.id=#{stone.id}"
     return true
+  end
+
+  def exportAnswer(stones)
+    File.open(@filename.gsub(/.txt$/, '_answer.txt'), "w:ascii-8bit") do |file|
+      stones.each do |stone|
+        file.print stone.deployed? ? "#{stone.x} #{stone.y} #{stone.side} #{stone.rotate}\r\n" : "\r\n"
+      end
+    end
   end
 end
 

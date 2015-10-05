@@ -15,14 +15,6 @@ class StoneReader
       @initialized_count = @initialized_count + 1
     end
   end
-
-  def exportAnswer(stones, filename)
-    File.open(filename, "w:ascii-8bit") do |file|
-      @stone_collection.each do |stone|
-        file.print stone.deployed? ? "#{stone.x} #{stone.y} #{stone.side} #{stone.rotate}\r\n" : "\r\n"
-      end
-    end
-  end
 end
 
 class Stone

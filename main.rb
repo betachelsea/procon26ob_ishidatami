@@ -23,10 +23,8 @@ f.each { |line|
 }
 f.close
 
-searcher = Searcher.new(field, stone_manager.stone_collection)
+searcher = Searcher.new(field, stone_manager.stone_collection, ARGV[0])
+searcher.work
 
-# 解決
-stones = searcher.deployStones
-
-stone_manager.exportAnswer(stones, ARGV[0].gsub(/.txt$/, '_answer.txt'))
+puts "finished!"
 
