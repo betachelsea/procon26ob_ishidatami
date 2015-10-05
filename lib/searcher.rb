@@ -4,11 +4,11 @@ require "./lib/map"
 
 class Searcher
   def initialize(field)
-    @field = field
+    @init_field = field
   end
 
   def deployStones(stones)
-    field = @field.clone
+    field = @init_field.clone
     stones.each do |stone|
       if deploy(field, stone)
         puts "置けた"
