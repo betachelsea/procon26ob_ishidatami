@@ -8,22 +8,29 @@ class Searcher
     @init_stones = stones
     @filename = filename
     @first_stone_candidates = firstStoneCandidateCheck(field, stones[0])
+    @first_stone_candidates.sort { |a, b| b[:score] <=> a[:score] }
     # TODO: stones[0]が全て空振りだったときのことを検討する
+    @answer_count = 0
   end
 
   def work
-    answer_stones = deployStones
-    exportAnswer(answer_stones)
+    @first_stone_candidates.each_with_index do |first, index|
+      field = Marshal.load(Marshal.dump(@init_field))
+      # field_shallow = @init_field.clone
+      stones = Marshal.load(Marshal.dump(@init_stones))
+      field.setCellStatus(first[:x], first[:y], first[:side], first[:rotate], stones[first[:stone_id]], CellStatus::STONE)
+      answer_stones = deployStones(field, stones)
+      exportAnswer(answer_stones)
+      exit if 3 < index
+    end
   end
 
-  def deployStones
-    field = @init_field.clone
-    stones = @init_stones.clone
+  def deployStones(field, stones)
     stones.each do |stone|
       if deploy(field, stone)
-        puts "置けた"
+        # puts "置けた"
       else
-        puts "失敗！"
+        # puts "失敗！"
       end
     end
     stones # 定義後
@@ -82,11 +89,12 @@ class Searcher
   end
 
   def exportAnswer(stones)
-    File.open(@filename.gsub(/.txt$/, '_answer.txt'), "w:ascii-8bit") do |file|
+    File.open(@filename.gsub(/.txt$/, "_answer#{@answer_count}.txt"), "w:ascii-8bit") do |file|
       stones.each do |stone|
         file.print stone.deployed? ? "#{stone.x} #{stone.y} #{stone.side} #{stone.rotate}\r\n" : "\r\n"
       end
     end
+    @answer_count += 1
   end
 end
 
