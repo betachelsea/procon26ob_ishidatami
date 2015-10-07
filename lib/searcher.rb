@@ -8,30 +8,30 @@ class Searcher
     @init_stones = stones
     @filename = filename
     @first_stone_candidates = firstStoneCandidateCheck(field, stones[0])
-    @first_stone_candidates.sort { |a, b| b[:score] <=> a[:score] }
+    @first_stone_candidates.sort! { |a, b| b[:score] <=> a[:score] }
     # TODO: stones[0]が全て空振りだったときのことを検討する
     @answer_count = 0
+    @best_score = 32*32
   end
 
   def work
     @first_stone_candidates.each_with_index do |first, index|
       field = Marshal.load(Marshal.dump(@init_field))
-      # field_shallow = @init_field.clone
       stones = Marshal.load(Marshal.dump(@init_stones))
       field.setCellStatus(first[:x], first[:y], first[:side], first[:rotate], stones[first[:stone_id]], CellStatus::STONE)
+      stones[first[:stone_id]].setStatus(first[:x], first[:y], first[:side], first[:rotate])
       answer_stones = deployStones(field, stones)
+      score = field.countEmptyZk
+      puts "Export -> No.#{@answer_count}, Score:#{score}, #{"* BEST!" if score < @best_score}"
+      @best_score = score if score < @best_score
       exportAnswer(answer_stones)
-      exit if 3 < index
+    @answer_count += 1
     end
   end
 
   def deployStones(field, stones)
     stones.each do |stone|
-      if deploy(field, stone)
-        # puts "置けた"
-      else
-        # puts "失敗！"
-      end
+      deploy(field, stone) if !stone.deployed
     end
     stones # 定義後
   end
@@ -84,7 +84,7 @@ class Searcher
     # デプロイ
     field.setCellStatus(deploy_x, deploy_y, deploy_side, deploy_rotate, stone, CellStatus::STONE)
     stone.setStatus(deploy_x, deploy_y, deploy_side, deploy_rotate)
-    puts "Score: #{deploy_score}, stone.id=#{stone.id}"
+    # puts "Score: #{deploy_score}, stone.id=#{stone.id}"
     return true
   end
 
@@ -94,7 +94,6 @@ class Searcher
         file.print stone.deployed? ? "#{stone.x} #{stone.y} #{stone.side} #{stone.rotate}\r\n" : "\r\n"
       end
     end
-    @answer_count += 1
   end
 end
 

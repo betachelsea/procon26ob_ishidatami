@@ -26,10 +26,12 @@ class Stone
     @rotate = 0 # 0, 90, 180, 270 のいずれか
     @init_map = Array.new()
     @status = {}
+    @deployed = false #配置済み
   end
 
   attr_reader :x, :y, :side, :rotate
   attr_reader :id
+  attr_reader :deployed
 
   def getMap(side=@side, rotate=@rotate)
     @status["#{side}#{rotate}"]
@@ -57,6 +59,7 @@ class Stone
     @y = y
     @side = side
     @rotate = rotate
+    @deployed = true
   end
 
   def setup_finished?

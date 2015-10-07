@@ -11,6 +11,9 @@ class Field
   attr_reader :setup_finished
   attr_reader :first_stone_deployed
 
+  def countEmptyZk
+    @map.flatten.count(CellStatus::EMPTY)
+  end
 
   # フィールド内で空の領域を探索する
   # mapのidは x + y * (32 + 7*2)

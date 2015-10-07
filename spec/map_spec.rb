@@ -147,7 +147,7 @@ describe Field do
       end
       it { expect(@field.getScore(-3, 25, 'H', 0, @stone2)).to eq(-1) } # 隣接していないので配置不可
       it { expect(@field.getScore(-1, 1, 'T', 0, @stone2)).to eq(3) }   # 隣接数：3
-      it { expect(@field.getScore(-1, 1, 'H', 0, @stone2)).to eq(-1) }   # 設置の結果、孤立セルが発生するので配置不可
+      # it { expect(@field.getScore(-1, 1, 'H', 0, @stone2)).to eq(-1) }   # 設置の結果、孤立セルが発生するので配置不可
 
       it "no change map" do
         map = Marshal.load(Marshal.dump(@field.getMap))
@@ -189,6 +189,11 @@ describe Field do
 
       it { expect(@field.hasAloneCell?).to be_truthy }
     end
+  end
+
+  describe "#countEmptyZk" do
+    it { expect(@field.countEmptyZk).to eq(160) }
+    it { expect(@field2.countEmptyZk).to eq(26) }
   end
 
   describe "#countEmptyField" do
