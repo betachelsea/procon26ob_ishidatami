@@ -40,8 +40,8 @@ class Searcher
     first_stone_candidates = []
     ['H', 'T'].each do |side|
       [0, 90, 180, 270].each do |rotate|
-        (0..31).each do |x|
-          (0..31).each do |y|
+        (-7..(31+7)).each do |x|
+          (-7..(31+7)).each do |y|
             score = field.getScore(x, y, side, rotate, stone)
             if score != -1
               first_stone_candidates.push({
