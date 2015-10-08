@@ -38,6 +38,29 @@ class Field
     @count
   end
 
+  # フィールド内で空の領域を探索する
+  # mapのidは x + y * (32 + 7*2)
+  # return [3, 9, 6] # からの領域ぶんの数値の配列が返される
+  def getEmptyFieldInfo
+    emptyFieldIds = [] # チェック済みの空zkのid配列
+    results = []
+
+    # 1セルずつ見る
+    # 白にぶちあたったら @emptyFieldsとして登録して次へ
+    (0..32).each do |y|
+      (0..32).each do |x|
+        next if @map[y + 7][x + 7] != CellStatus::EMPTY
+        next if emptyFieldIds.any? { |id| id == getCellId(x, y) }
+        island = findIsland(x, y, [])
+        next if island.count == 0
+        emptyFieldIds.concat(island)
+        results.push(island.count)
+      end
+    end
+
+    return results
+  end
+
   def findIsland(x, y, foundIds)
     cell_id = getCellId(x, y)
     map_x = x + 7

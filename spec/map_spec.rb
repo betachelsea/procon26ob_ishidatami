@@ -201,6 +201,12 @@ describe Field do
     it { expect(@field2.countEmptyField).to eq(3) }
   end
 
+  describe "#getEmptyFieldInfo" do
+    it { expect(@field.getEmptyFieldInfo).to eq([160]) }
+    it { expect(@field2.getEmptyFieldInfo).to eq([4, 12, 10]) }
+
+  end
+
   describe "#findIsland" do
     it { expect(@field2.findIsland(-7, -7, [])).to eq([]) }
     it { expect(@field2.findIsland(3, 1, []).count).to eq(4) }
