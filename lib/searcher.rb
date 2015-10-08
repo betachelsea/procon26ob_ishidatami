@@ -36,6 +36,50 @@ class Searcher
     stones # 定義後
   end
 
+  def repeatDeployStones(field, stones, check_stone_id)
+    stone = stones[check_stone_id]
+    candidates = getCandidatesArray(field, stone)
+    # 再帰的にトライ
+    candidates.each do |status|
+      field.setCellStatus(status[:x], status[:y], status[:side], status[:rotate], stone, CellStatus::PRESTONE)
+      if field.hasAloneCell?
+        field.setCellStatus(status[:x], status[:y], status[:side], status[:rotate], stone, CellStatus::EMPTY)
+      else
+        field.setCellStatus(status[:x], status[:y], status[:side], status[:rotate], stone, CellStatus::STONE)
+        stone.setStatus(status[:x], status[:y], status[:side], status[:rotate])
+        if stones.count <= check_stone_id + 1
+          repeatDeployStones(field, stones, check_stone_id + 1)
+        else
+          # 終了検知
+          score = field.countEmptyZk
+          puts "Export -> No.#{@answer_count}, Score:#{score}, #{"* BEST!" if score < @best_score}"
+          @best_score = score if score < @best_score
+          exportAnswer(answer_stones)
+          @answer_count += 1
+        end
+      end
+    end
+  end
+
+  def getCandidatesArray(field, stone)
+    candidates = []
+    ['H', 'T'].each do |side|
+      [0, 90, 180, 270].each do |rotate|
+        (-7..(31+7)).each do |x|
+          (-7..(31+7)).each do |y|
+            score = field.getScore(x, y, side, rotate, stone)
+            if score != -1
+              candidates.push({
+                x: x, y: y, side: side, rotate: rotate,
+                stone_id: stone.id, score: score, last_score: nil})
+            end
+          end
+        end
+      end
+    end
+    candidates.sort! { |a, b| b[:score] <=> a[:score] }
+  end
+
   def firstStoneCandidateCheck(field, stone)
     first_stone_candidates = []
     ['H', 'T'].each do |side|
