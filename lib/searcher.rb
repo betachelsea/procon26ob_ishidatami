@@ -41,7 +41,6 @@ class Searcher
     end
 
     candidates = getCandidatesArray(field, stone)
-    repeatDeployStones(field, stones, check_stone_id + 1) if candidates.count == 0
     # 再帰的にトライ
     candidates.each do |status|
       field.setCellStatus(status[:x], status[:y], status[:side], status[:rotate], stone, CellStatus::STONE)
@@ -52,6 +51,7 @@ class Searcher
         stone.reset
       end
     end
+    repeatDeployStones(field, stones, check_stone_id + 1) # 何もせずに次を試す
   end
 
   def getCandidatesArray(field, stone)
