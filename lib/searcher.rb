@@ -15,18 +15,9 @@ class Searcher
   end
 
   def work
-    @first_stone_candidates.each_with_index do |first, index|
-      field = Marshal.load(Marshal.dump(@init_field))
-      stones = Marshal.load(Marshal.dump(@init_stones))
-      field.setCellStatus(first[:x], first[:y], first[:side], first[:rotate], stones[first[:stone_id]], CellStatus::STONE)
-      stones[first[:stone_id]].setStatus(first[:x], first[:y], first[:side], first[:rotate])
-      answer_stones = deployStones(field, stones)
-      score = field.countEmptyZk
-      puts "Export -> No.#{@answer_count}, Score:#{score}, #{"* BEST!" if score < @best_score}"
-      @best_score = score if score < @best_score
-      exportAnswer(answer_stones)
-    @answer_count += 1
-    end
+    field = Marshal.load(Marshal.dump(@init_field))
+    stones = Marshal.load(Marshal.dump(@init_stones))
+    repeatDeployStones(field, stones, 0)
   end
 
   def deployStones(field, stones)
@@ -38,25 +29,27 @@ class Searcher
 
   def repeatDeployStones(field, stones, check_stone_id)
     stone = stones[check_stone_id]
+
+    if stone.nil?
+      # 終了検知
+      score = field.countEmptyZk
+      puts "Export -> No.#{@answer_count}, Score:#{score}, #{"* BEST!" if score < @best_score}"
+      @best_score = score if score < @best_score
+      exportAnswer(stones)
+      @answer_count += 1
+      return true
+    end
+
     candidates = getCandidatesArray(field, stone)
+    repeatDeployStones(field, stones, check_stone_id + 1) if candidates.count == 0
     # 再帰的にトライ
     candidates.each do |status|
-      field.setCellStatus(status[:x], status[:y], status[:side], status[:rotate], stone, CellStatus::PRESTONE)
-      if field.hasAloneCell?
+      field.setCellStatus(status[:x], status[:y], status[:side], status[:rotate], stone, CellStatus::STONE)
+      stone.setStatus(status[:x], status[:y], status[:side], status[:rotate])
+      if check_stone_id + 1 <= stones.count
+        repeatDeployStones(field, stones, check_stone_id + 1)
         field.setCellStatus(status[:x], status[:y], status[:side], status[:rotate], stone, CellStatus::EMPTY)
-      else
-        field.setCellStatus(status[:x], status[:y], status[:side], status[:rotate], stone, CellStatus::STONE)
-        stone.setStatus(status[:x], status[:y], status[:side], status[:rotate])
-        if stones.count <= check_stone_id + 1
-          repeatDeployStones(field, stones, check_stone_id + 1)
-        else
-          # 終了検知
-          score = field.countEmptyZk
-          puts "Export -> No.#{@answer_count}, Score:#{score}, #{"* BEST!" if score < @best_score}"
-          @best_score = score if score < @best_score
-          exportAnswer(answer_stones)
-          @answer_count += 1
-        end
+        stone.reset
       end
     end
   end

@@ -62,6 +62,12 @@ class Stone
     @deployed = true
   end
 
+  def reset
+    @x = nil
+    @y = nil
+    @deployed = false
+  end
+
   def setup_finished?
     8 <= @init_map.length
   end
