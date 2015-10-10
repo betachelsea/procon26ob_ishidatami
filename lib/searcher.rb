@@ -19,13 +19,6 @@ class Searcher
     repeatDeployStones(field, stones, 0)
   end
 
-  def deployStones(field, stones)
-    stones.each do |stone|
-      deploy(field, stone) if !stone.deployed
-    end
-    stones # 定義後
-  end
-
   def repeatDeployStones(field, stones, check_stone_id)
     stone = stones[check_stone_id]
 
@@ -75,48 +68,6 @@ class Searcher
       end
     end
     candidates.sort! { |a, b| b[:score] <=> a[:score] }
-  end
-
-  def deploy(field, stone)
-    deploy_score = -1
-    deploy_x = nil
-    deploy_y = nil
-    deploy_side = 'H'
-    deploy_rotate = 0
-    stone_candidates = []
-
-    # さがす
-    ['H', 'T'].each do |side|
-      [0, 90, 180, 270].each do |rotate|
-        (-7..38).each do |x|
-          (-7..38).each do |y|
-            new_score = field.getScore(x, y, side, rotate, stone)
-            if 0 < new_score
-              stone_candidates.push({
-                x: x, y: y, side: side, rotate: rotate,
-                stone_id: stone.id, score: new_score })
-            end
-          end
-        end
-      end
-    end
-
-    # 配置候補の中からベストなものを探す
-    deployed = false
-    stone_candidates.sort! { |a, b| b[:score] <=> a[:score] }
-    stone_candidates.each do |status|
-      field.setCellStatus(status[:x], status[:y], status[:side], status[:rotate], stone, CellStatus::PRESTONE)
-      if field.hasAloneCell?
-        field.setCellStatus(status[:x], status[:y], status[:side], status[:rotate], stone, CellStatus::EMPTY)
-      else
-        deployed = true
-        field.setCellStatus(status[:x], status[:y], status[:side], status[:rotate], stone, CellStatus::STONE)
-        stone.setStatus(status[:x], status[:y], status[:side], status[:rotate])
-        break
-      end
-    end
-
-    return deployed
   end
 
   def exportAnswer(stones)
