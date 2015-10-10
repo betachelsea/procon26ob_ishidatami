@@ -10,6 +10,7 @@ class Searcher
     @filename = filename
     @answer_count = 0
     @best_score = 32*32
+    @best_score_stone_count = 256
     @trial_count = 0
   end
 
@@ -26,13 +27,16 @@ class Searcher
       # 終了検知
       @trial_count += 1
       score = field.countEmptyZk
-      if score < @best_score #スコアが上がったら回答を出力
-        puts "\nExport -> No.#{@answer_count}, Score:#{score}, #{"* BEST!" if score < @best_score}"
+      deployed_stone_count = stones.count {|stone| stone.deployed? }
+      #スコアが上がったら回答を出力
+      if (score < @best_score) || (score == @best_score && deployed_stone_count < @best_score_stone_count)
+        puts "\nExport -> No.#{@answer_count}, Score:#{score}, stone:#{deployed_stone_count} NOW BEST!"
         exportAnswer(stones)
         @best_score = score
+        @best_score_stone_count = deployed_stone_count
         @answer_count += 1
       else
-        print "\r Skip Answer -> score:#{score}, trial_count:#{@trial_count}"
+        print "\r Skip Answer *************** -> score:#{score}, trial_count:#{@trial_count}"
       end
       return true
     end
