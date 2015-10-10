@@ -1,6 +1,6 @@
 require "pry"
 require "./lib/stone"
-require "./lib/map"
+require "./lib/field"
 require "./lib/searcher"
 
 stone_manager = nil

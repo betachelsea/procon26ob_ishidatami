@@ -1,6 +1,6 @@
 require "spec_helper"
 require "util"
-require "map"
+require "field"
 require "stone"
 require "pry"
 

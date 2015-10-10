@@ -1,6 +1,6 @@
 # coding:utf-8
 require "./lib/util"
-require "./lib/map"
+require "./lib/field"
 
 class Searcher
   def initialize(field, stones, filename)
