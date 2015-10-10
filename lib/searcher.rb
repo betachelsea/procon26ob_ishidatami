@@ -13,6 +13,7 @@ class Searcher
     # TODO: stones[0]が全て空振りだったときのことを検討する
     @answer_count = 0
     @best_score = 32*32
+    @trial_count = 0
   end
 
   def work
@@ -33,11 +34,16 @@ class Searcher
 
     if stone.nil?
       # 終了検知
+      @trial_count += 1
       score = field.countEmptyZk
-      puts "Export -> No.#{@answer_count}, Score:#{score}, #{"* BEST!" if score < @best_score}"
-      @best_score = score if score < @best_score
-      exportAnswer(stones)
-      @answer_count += 1
+      if score < @best_score #スコアが上がったら回答を出力
+        puts "\nExport -> No.#{@answer_count}, Score:#{score}, #{"* BEST!" if score < @best_score}"
+        exportAnswer(stones)
+        @best_score = score
+        @answer_count += 1
+      else
+        print "\r Skip Answer -> score:#{score}, trial_count:#{@trial_count}"
+      end
       return true
     end
 
