@@ -31,6 +31,7 @@ class Searcher
       #スコアが上がったら回答を出力
       if (score < @best_score) || (score == @best_score && deployed_stone_count < @best_score_stone_count)
         puts "\nExport -> No.#{@answer_count}, Score:#{score}, stone:#{deployed_stone_count} NOW BEST!"
+        binding.pry
         exportAnswer(stones)
         @best_score = score
         @best_score_stone_count = deployed_stone_count

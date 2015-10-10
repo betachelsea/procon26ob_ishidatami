@@ -4,6 +4,7 @@ require "pry"
 class Field
   def initialize
     @map = Array.new(32 + 7*2) { Array.new(32 + 7*2) { CellStatus::WALL } }
+    @stone_id_map = Array.new(32 + 7*2) { Array.new(32 + 7*2) { CellStatus::WALL } }
     @field_line_count = 0
     @first_stone_deployed = false
   end
@@ -84,11 +85,16 @@ class Field
 
   def setup(line)
     @map[@field_line_count + 7][7, line.length] = line.split("").map{|n| n.to_i}
+    @stone_id_map[@field_line_count + 7][7, line.length] = line.split("").map{|n| n.to_i}
     @field_line_count += 1
   end
 
   def getMap
     @map[7, 32].map{|line| line[7, 32]}
+  end
+
+  def getStoneIdMap
+    @stone_id_map[7, 32].map{|line| line[7, 32]}
   end
 
   def setupFinished?
@@ -104,6 +110,12 @@ class Field
         (stone_line[i] == 1) ? cell_status : map_stone
       end
       @map[7 + y + index][7 + x, 8] = merged_line
+      if cell_status == CellStatus::STONE
+        # stone_id_mapも更新
+        @stone_id_map[7 + y + index][7 + x, 8] = merged_line.map { |n|
+          n == CellStatus::STONE ? stone.id + CellStatus::ID_MAP_BASE : n
+        }
+      end
     end
   end
 
