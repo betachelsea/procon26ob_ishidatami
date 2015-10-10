@@ -73,6 +73,6 @@ class Stone
   end
 
   def deployed?
-    !@x.nil? || !@y.nil?
+    @deployed
   end
 end
