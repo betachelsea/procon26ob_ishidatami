@@ -1,4 +1,5 @@
 # coding:utf-8
+require 'fileutils'
 require "./lib/util"
 require "./lib/field"
 
@@ -135,7 +136,11 @@ class Searcher
   end
 
   def exportAnswer(stones)
-    File.open(@filename.gsub(/.txt$/, "_answer#{@answer_count}.txt"), "w:ascii-8bit") do |file|
+    org_filename = @filename.match(/\/(.+).txt$/)[1]
+    filepath = "resource/answer#{org_filename}/#{org_filename}_answer_#{@answer_count}.txt"
+    dirname = File.dirname(filepath)
+    FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
+    File.open(filepath, "w:ascii-8bit") do |file|
       stones.each do |stone|
         file.print stone.deployed? ? "#{stone.x} #{stone.y} #{stone.side} #{stone.rotate}\r\n" : "\r\n"
       end
