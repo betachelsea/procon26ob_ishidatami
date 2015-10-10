@@ -8,9 +8,6 @@ class Searcher
     @init_field = field
     @init_stones = stones
     @filename = filename
-    @first_stone_candidates = firstStoneCandidateCheck(field, stones[0])
-    @first_stone_candidates.sort! { |a, b| b[:score] <=> a[:score] }
-    # TODO: stones[0]が全て空振りだったときのことを検討する
     @answer_count = 0
     @best_score = 32*32
     @trial_count = 0
@@ -78,25 +75,6 @@ class Searcher
       end
     end
     candidates.sort! { |a, b| b[:score] <=> a[:score] }
-  end
-
-  def firstStoneCandidateCheck(field, stone)
-    first_stone_candidates = []
-    ['H', 'T'].each do |side|
-      [0, 90, 180, 270].each do |rotate|
-        (-7..(31+7)).each do |x|
-          (-7..(31+7)).each do |y|
-            score = field.getScore(x, y, side, rotate, stone)
-            if score != -1
-              first_stone_candidates.push({
-                x: x, y: y, side: side, rotate: rotate,
-                stone_id: stone.id, score: score, last_score: nil})
-            end
-          end
-        end
-      end
-    end
-    first_stone_candidates
   end
 
   def deploy(field, stone)
