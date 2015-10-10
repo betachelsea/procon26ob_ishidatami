@@ -107,13 +107,6 @@ class Field
     end
   end
 
-  # マップ内のprestoneを変換します
-  def prestoneConvert(status)
-    @map.map! do |line|
-      line.map! { |item| (item == CellStatus::PRESTONE) ? status : item }
-    end
-  end
-
   # 孤立セルの調査
   def hasAloneCell?
     (0..32).each do |x|
@@ -141,8 +134,8 @@ class Field
         next if zk == 0
         return -1 if map_line[i] != 0 # map上にすでに何かあるなら配置不可
         # 辺が既存の石に触れているかを調査
-        neighbor_stone_count += countNeighborStone((x + i), (y + index))
-        neighbor_wall_count += countNeighborWall((x + i), (y + index))
+        neighbor_stone_count += countNeighborStatus((x + i), (y + index), CellStatus::STONE)
+        neighbor_wall_count += countNeighborStatus((x + i), (y + index), CellStatus::WALL)
       end
     end
 
@@ -164,24 +157,6 @@ class Field
     count += 1 if (7 + y + 1) <= 46 && @map[7 + y + 1][7 + x] == target
     count += 1 if 0 <= (7 + x - 1) && @map[7 + y][7 + x - 1] == target
     count += 1 if (7 + x + 1) <= 46 && @map[7 + y][7 + x + 1] == target
-    count
-  end
-
-  def countNeighborStone(x, y)
-    count = 0
-    count += 1 if 0 <= (7 + y - 1) && @map[7 + y - 1][7 + x] == 2
-    count += 1 if (7 + y + 1) <= 46 && @map[7 + y + 1][7 + x] == 2
-    count += 1 if 0 <= (7 + x - 1) && @map[7 + y][7 + x - 1] == 2
-    count += 1 if (7 + x + 1) <= 46 && @map[7 + y][7 + x + 1] == 2
-    count
-  end
-
-  def countNeighborWall(x, y)
-    count = 0
-    count += 1 if 0 <= (7 + y - 1) && @map[7 + y - 1][7 + x] == 1
-    count += 1 if (7 + y + 1) <= 46 && @map[7 + y + 1][7 + x] == 1
-    count += 1 if 0 <= (7 + x - 1) && @map[7 + y][7 + x - 1] == 1
-    count += 1 if (7 + x + 1) <= 46 && @map[7 + y][7 + x + 1] == 1
     count
   end
 
