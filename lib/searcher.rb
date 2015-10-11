@@ -36,7 +36,7 @@ class Searcher
         @best_score_stone_count = deployed_stone_count
         @answer_count += 1
       else
-        print "\r Skip Answer *************** -> score:#{score}, trial_count:#{@trial_count}"
+        print "\r Skip Answer *************** -> score:#{score}, trial_count:#{@trial_count}****************"
       end
       return true
     end
