@@ -4,6 +4,7 @@ require "pry"
 class Field
   def initialize
     @map = Array.new(32 + 7*2) { Array.new(32 + 7*2) { CellStatus::WALL } }
+    @stone_id_map = Array.new(32 + 7*2) { Array.new(32 + 7*2) { CellStatus::WALL } }
     @field_line_count = 0
     @first_stone_deployed = false
   end
@@ -61,6 +62,38 @@ class Field
     return results
   end
 
+  ## 空の領域に接している配置石で一番若いIDを取ってくる
+  def getUndoStoneId
+    # 1セルずつ見る
+    result_stone_ids = []
+    (0..32).each do |y|
+      (0..32).each do |x|
+        next if @stone_id_map[y + 7][x + 7] != CellStatus::EMPTY
+        # up
+        if 0 <= (7 + y - 1) && CellStatus::ID_MAP_BASE <= @stone_id_map[y + 7 - 1][x + 7]
+          result_stone_ids.push(@stone_id_map[y + 7 - 1][x + 7])
+        end
+
+        # down
+        if (7 + y + 1) <= 46 && CellStatus::ID_MAP_BASE <= @stone_id_map[y + 7 + 1][x + 7]
+          result_stone_ids.push(@stone_id_map[y + 7 + 1][x + 7])
+        end
+
+        # left
+        if 0 <= (7 + x - 1) && CellStatus::ID_MAP_BASE <= @stone_id_map[y + 7][x + 7 - 1]
+          result_stone_ids.push(@stone_id_map[y + 7][x + 7 - 1])
+        end
+
+        # right
+        if (7 + x + 1) <= 46 && CellStatus::ID_MAP_BASE <= @stone_id_map[y + 7][x + 7 + 1]
+          result_stone_ids.push(@stone_id_map[y + 7][x + 7 + 1])
+        end
+      end
+    end
+
+    return (result_stone_ids.min - CellStatus::ID_MAP_BASE)
+  end
+
   def findIsland(x, y, foundIds)
     cell_id = getCellId(x, y)
     map_x = x + 7
@@ -84,11 +117,16 @@ class Field
 
   def setup(line)
     @map[@field_line_count + 7][7, line.length] = line.split("").map{|n| n.to_i}
+    @stone_id_map[@field_line_count + 7][7, line.length] = line.split("").map{|n| n.to_i}
     @field_line_count += 1
   end
 
   def getMap
     @map[7, 32].map{|line| line[7, 32]}
+  end
+
+  def getStoneIdMap
+    @stone_id_map[7, 32].map{|line| line[7, 32]}
   end
 
   def setupFinished?
@@ -104,6 +142,21 @@ class Field
         (stone_line[i] == 1) ? cell_status : map_stone
       end
       @map[7 + y + index][7 + x, 8] = merged_line
+
+      # こちらも更新
+      id_map_line = @stone_id_map[7 + y + index][7 + x, 8]
+      id_merged_line = id_map_line.map.with_index do |id_map_stone, i|
+        if (stone_line[i] == 1)
+          if cell_status == CellStatus::STONE
+            stone.id + CellStatus::ID_MAP_BASE
+          else
+            CellStatus::EMPTY
+          end
+        else
+          id_map_stone
+        end
+      end
+      @stone_id_map[7 + y + index][7 + x, 8] = id_merged_line
     end
   end
 
