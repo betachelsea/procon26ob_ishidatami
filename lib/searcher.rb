@@ -12,6 +12,7 @@ class Searcher
     @best_score = 32*32
     @best_score_stone_count = 256
     @trial_count = 0
+    @undo_target_stone_id = -1
   end
 
   def work
@@ -22,6 +23,7 @@ class Searcher
 
   def repeatDeployStones(field, stones, check_stone_id)
     stone = stones[check_stone_id]
+    # print "\r Stone Check #{check_stone_id} *****************"
 
     if stone.nil?
       # 終了検知
@@ -31,8 +33,9 @@ class Searcher
       #スコアが上がったら回答を出力
       if (score < @best_score) || (score == @best_score && deployed_stone_count < @best_score_stone_count)
         puts "\nExport -> No.#{@answer_count}, Score:#{score}, stone:#{deployed_stone_count} NOW BEST!"
-        binding.pry
         exportAnswer(stones)
+        @undo_target_stone_id = field.getUndoStoneId
+        puts "decide undo stone_id -> #{@undo_target_stone_id}"
         @best_score = score
         @best_score_stone_count = deployed_stone_count
         @answer_count += 1
@@ -51,9 +54,21 @@ class Searcher
         repeatDeployStones(field, stones, check_stone_id + 1)
         field.setCellStatus(status[:x], status[:y], status[:side], status[:rotate], stone, CellStatus::EMPTY)
         stone.reset
+        if @undo_target_stone_id != -1
+          if stone.id != @undo_target_stone_id
+            # puts "break #{stone.id}"
+            break
+          else
+            puts "set next candidate #{stone.id}"
+            @undo_target_stone_id = -1
+          end
+        end
       end
     end
-    repeatDeployStones(field, stones, check_stone_id + 1) # 何もせずに次を試す
+
+    if @undo_target_stone_id == -1
+      repeatDeployStones(field, stones, check_stone_id + 1) # 何もせずに次を試す
+    end
   end
 
   def getCandidatesArray(field, stone)
