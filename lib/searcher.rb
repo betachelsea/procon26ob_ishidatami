@@ -34,14 +34,14 @@ class Searcher
       if (score < @best_score) || (score == @best_score && deployed_stone_count < @best_score_stone_count)
         puts "\nExport -> No.#{@answer_count}, Score:#{score}, stone:#{deployed_stone_count} NOW BEST!"
         exportAnswer(stones)
-        @undo_target_stone_id = field.getUndoStoneId
-        puts "decide undo stone_id -> #{@undo_target_stone_id}"
         @best_score = score
         @best_score_stone_count = deployed_stone_count
         @answer_count += 1
       else
         print "\r Skip Answer *************** -> score:#{score}, trial_count:#{@trial_count}****************"
       end
+      @undo_target_stone_id = field.getUndoStoneId #結果を踏まえてUndo
+      print "\rdecide undo stone_id -> #{@undo_target_stone_id}"
       return true
     end
 
@@ -49,6 +49,7 @@ class Searcher
     # 再帰的にトライ
     candidates.each do |status|
       field.setCellStatus(status[:x], status[:y], status[:side], status[:rotate], stone, CellStatus::STONE)
+      print "\rSet Stone -> #{stone.id}**********************************"
       stone.setStatus(status[:x], status[:y], status[:side], status[:rotate])
       if check_stone_id + 1 <= stones.count
         repeatDeployStones(field, stones, check_stone_id + 1)
@@ -59,7 +60,7 @@ class Searcher
             # puts "break #{stone.id}"
             break
           else
-            puts "set next candidate #{stone.id}"
+            print "\rset next candidate #{stone.id}"
             @undo_target_stone_id = -1
           end
         end
