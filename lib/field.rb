@@ -3,8 +3,8 @@ require "pry"
 
 class Field
   def initialize
-    @map = Array.new(32 + 7*2) { Array.new(32 + 7*2) { CellStatus::WALL } }
-    @stone_id_map = Array.new(32 + 7*2) { Array.new(32 + 7*2) { CellStatus::WALL } }
+    @map = Array.new(32 + 7*2) { Array.new(32 + 7*2) { CellStatus::VIRTUAL_WALL } }
+    @stone_id_map = Array.new(32 + 7*2) { Array.new(32 + 7*2) { CellStatus::VIRTUAL_WALL } }
     @field_line_count = 0
     @first_stone_deployed = false
   end
@@ -179,6 +179,7 @@ class Field
   def getScore(x, y, side, rotate, stone)
     neighbor_stone_count = 0
     neighbor_wall_count = 0
+    neighbor_virtual_wall_count = 0
     stone.getMap(side, rotate).each_with_index do |stone_line, index|
       next if stone_line.count(1) == 0 # 石が無ければ飛ばす
       return -1 if @map[7 + y + index].nil? # 石があるのにmap外なら配置不可
@@ -189,13 +190,13 @@ class Field
         # 辺が既存の石に触れているかを調査
         neighbor_stone_count += countNeighborStatus((x + i), (y + index), CellStatus::STONE)
         neighbor_wall_count += countNeighborStatus((x + i), (y + index), CellStatus::WALL)
+        neighbor_virtual_wall_count += countNeighborStatus((x + i), (y + index), CellStatus::VIRTUAL_WALL)
       end
     end
 
     return -1 if @first_stone_deployed && neighbor_stone_count == 0
     # 実質配置可
-    answer = neighbor_stone_count + neighbor_wall_count
-    return answer
+    return neighbor_stone_count + neighbor_wall_count + neighbor_virtual_wall_count
   end
 
   def countNeighborStatus(x, y, target)
