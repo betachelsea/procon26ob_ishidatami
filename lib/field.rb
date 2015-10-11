@@ -185,7 +185,7 @@ class Field
       map_line = @map[7 + y + index][7 + x, 8]
       stone_line.each.with_index do |zk, i|
         next if zk == 0
-        return -1 if map_line[i] != 0 # map上にすでに何かあるなら配置不可
+        return -1 if map_line[i] != CellStatus::EMPTY # map上にすでに何かあるなら配置不可
         # 辺が既存の石に触れているかを調査
         neighbor_stone_count += countNeighborStatus((x + i), (y + index), CellStatus::STONE)
         neighbor_wall_count += countNeighborStatus((x + i), (y + index), CellStatus::WALL)
@@ -195,12 +195,6 @@ class Field
     return -1 if @first_stone_deployed && neighbor_stone_count == 0
     # 実質配置可
     answer = neighbor_stone_count + neighbor_wall_count
-    # 孤立セルのチェック
-    setCellStatus(x, y, side, rotate, stone, CellStatus::PRESTONE)
-    # answer = -1 if 1 < self.countEmptyField # 検討中
-    # answer = -1 if self.hasAloneCell? # 検討中
-    setCellStatus(x, y, side, rotate, stone, CellStatus::EMPTY)
-    # binding.pry if 30 == stone.id
     return answer
   end
 
