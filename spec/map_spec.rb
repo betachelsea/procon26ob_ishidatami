@@ -111,6 +111,10 @@ describe Field do
   end
 
   describe "#getScore" do
+    # Score定義
+    # map内定義壁に隣接してれば +2
+    # 設置済み石に隣接してれば +1
+    # map外仮想壁に隣接しれてば +1
     before do
       @stone1 = Stone.new(0)
       @stone1.setState("00010000")
@@ -131,12 +135,23 @@ describe Field do
       @stone2.setState("00000000")
       @stone2.setState("00000000")
       @stone2.setState("00000000")
+
+      @stone3 = Stone.new(1)
+      @stone3.setState("10000000")
+      @stone3.setState("10000000")
+      @stone3.setState("10000000")
+      @stone3.setState("00000000")
+      @stone3.setState("00000000")
+      @stone3.setState("00000000")
+      @stone3.setState("00000000")
+      @stone3.setState("00000000")
     end
 
     context "when set first stone" do
       it { expect(@field.getScore(-7, 0, 'H', 0, @stone1)).to eq(-1) }  # 領域外なので不可
       it { expect(@field.getScore(-2, 1, 'H', 0, @stone1)).to eq(0) }   # 隣接ゼロだが配置可
-      it { expect(@field.getScore(-3, 1, 'H', 0, @stone1)).to eq(8) }   # 隣接数：8
+      it { expect(@field.getScore(-3, 1, 'H', 0, @stone1)).to eq(8) }   # 隣接数：仮想壁に +(8*1)
+      it { expect(@field2.getScore(7, 9, 'H', 0, @stone3)).to eq(10) } # 隣接数：マップ内壁 +(5*2)
     end
 
     context "when set second stone" do

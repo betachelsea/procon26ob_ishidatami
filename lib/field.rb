@@ -196,7 +196,7 @@ class Field
 
     return -1 if @first_stone_deployed && neighbor_stone_count == 0
     # 実質配置可
-    return neighbor_stone_count + neighbor_wall_count + neighbor_virtual_wall_count
+    return neighbor_stone_count + (neighbor_wall_count * 2) + neighbor_virtual_wall_count
   end
 
   def countNeighborStatus(x, y, target)
